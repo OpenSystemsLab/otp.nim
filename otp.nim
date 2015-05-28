@@ -15,7 +15,7 @@ from math import pow
 from times import epochTime
 
 const
-  VERSION* = '0.1.1'
+  VERSION* = "0.1.1"
 
 type
   OneTimePassword = ref object of RootObj
