@@ -38,7 +38,7 @@ proc newTotp*(secret: string, digits: int = 6, interval: int = 30): TOTP =
   result.digits = digits
   result.interval = interval
 
-proc int_to_bytestring(input: int, padding: int = 8): string =
+proc int_to_bytestring(input: int, padding: int = 8): string {.inline.} =
   var input = input
 
   var arr: seq[char] = @[]
@@ -53,10 +53,10 @@ proc int_to_bytestring(input: int, padding: int = 8): string =
   for i in 0..arr.len-1:
     result[i] = arr[arr.len - i - 1]
 
-proc timecode(self: TOTP, timestamp: int): int =
+proc timecode(self: TOTP, timestamp: int): int {.inline.} =
   result = int(timestamp / self.interval)
 
-proc generate(self: OneTimePassword, input: int): int =
+proc generate(self: OneTimePassword, input: int): int {.inline.} =
   var hmac_hash = hmac_sha1(base32.decode(self.secret), int_to_bytestring(input))
 
   let offset = hmac_hash[19].int and 0xf
