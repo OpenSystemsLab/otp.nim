@@ -1,8 +1,8 @@
 [Package]
 name          = "OTP"
-version       = "0.1.0"
-author        = "Anonymous"
-description   = "New Nimble project for Nim"
+version       = "0.1.1"
+author        = "Huy Doan"
+description   = "One Time Password library for Nim"
 license       = "MIT"
 
 [Deps]
