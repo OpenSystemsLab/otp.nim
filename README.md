@@ -1,6 +1,6 @@
 # otp.nim
 
-This module implements One Time Password library for.
+This module implements One Time Password library for Nim.
 
 
 Installation
