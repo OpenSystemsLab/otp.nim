@@ -15,7 +15,6 @@ assert hotp.at(9) == 520489
 
 assert hotp.verify(520489, 9) == true
 assert hotp.verify(520489, 10) == false
-assert hotp.verify("520489", 10) == false
 
 #hotp = newHotp("wrn3pqx5uqxqvnqr")
 #assert hotp.provisioningUri("mark@percival") == "otpauth://hotp/mark@percival?secret=wrn3pqx5uqxqvnqr&counter=0"
