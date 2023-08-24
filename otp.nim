@@ -10,12 +10,8 @@
 
 from hmac import hmac_sha1
 from base32 import decode
-from sha1 import toHex
 from math import pow
 from times import epochTime
-
-const
-  VERSION* = "0.1.1"
 
 type
   OneTimePassword = ref object of RootObj
