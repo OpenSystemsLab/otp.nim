@@ -7,5 +7,5 @@ license       = "MIT"
 
 [Deps]
 Requires: "nim >= 1.6.10"
-Requires: "hmac >= 0.3.0"
+Requires: "hmac >= 0.3.1"
 Requires: "base32"
