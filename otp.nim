@@ -77,10 +77,8 @@ proc verify*(self: HOTP, otp: int, counter: int = 0): bool =
   otp == self.at(counter)
 
 proc verify*(self: TOTP, otp: int, timestamp: int = 0): bool =
-  if timestamp == 0:
-    var timestamp = epochTime().int
+  var timestamp = if timestamp == 0: epochTime().int else: timestamp
   otp == self.at(timestamp)
-
 
 proc provisioningUri*(self: OneTimePassword, name: string, initialCount: int = 0, issuerName: string = ""): string =
     var  otpType: string
