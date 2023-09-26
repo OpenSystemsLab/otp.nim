@@ -1,6 +1,6 @@
 [Package]
 name          = "otp"
-version       = "0.2.3"
+version       = "0.3.0"
 author        = "Huy Doan"
 description   = "One Time Password library for Nim"
 license       = "MIT"
