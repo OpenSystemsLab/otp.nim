@@ -12,17 +12,23 @@ from hmac import hmac_sha1
 from base32 import decode
 from math import pow
 from times import epochTime
+import stack_strings as stackstrings
+
+const secretSize {.intDefine: "otp.secretSize".} = 32
 
 type
+  OneTimePasswordDefect = object of Defect
   OneTimePassword = object of RootObj
     digits: int
-    secret: string # Perhaps we should use stack_strings to have 0 heap allocation?
+    secret: StackString[secretSize]
 
   HOTP* = object of OneTimePassword
   TOTP* = object of OneTimePassword
     interval: int
 
-const hookStr = "For security reasons a copy should not be made, this keeps the secret in memory longer." 
+const 
+  hookStr = "For security reasons a copy should not be made, this keeps the secret in memory longer."
+  sizeErrStr = "Secret is too long, only secrets upto the following length are allowed: " & $secretSize
 
 when NimMajor >= 2:
   proc `=dup`(_: HOTP): HOTP {.error: hookStr.}
@@ -31,11 +37,29 @@ when NimMajor >= 2:
 proc `=copy`(_: var HOTP, _: HOTP){.error: hookStr}
 proc `=copy`(_: var TOTP, _: TOTP){.error: hookStr}
 
-proc init*(_: typedesc[HOTP], secret: openArray[char], digits: int = 6): HOTP =
-  HOTP(secret: substr secret, digits: digits)
+proc init*(_: typedesc[HOTP], secret: static openArray[char], digits: int = 6): HOTP =
+  when secret.len > secretSize:
+    {.error: "Secret length too long, consider using `-d:otp.secretSize` to increase it.".}
+  result = HOTP(digits: digits)
+  result.secret.add secret
 
-proc init*(_: typedesc[TOTP], secret: string, digits: int = 6, interval: int = 30): TOTP =
-  TOTP(secret: substr secret, digits: digits, interval: interval)
+proc init*(_: typedesc[HOTP], secret: openArray[char], digits: int = 6): HOTP =
+  if secret.len > secretSize:
+    raise (ref OneTimePasswordDefect)(msg: sizeErrStr)
+  result = HOTP(digits: digits)
+  result.secret.add secret
+
+proc init*(_: typedesc[TOTP], secret: static openArray[char], digits: int = 6, interval: int = 30): TOTP =
+  when secret.len > secretSize:
+    {.error: "Secret length too long, consider using `-d:otp.secretSize` to increase it.".}
+  result = TOTP(digits: digits, interval: interval)
+  result.secret.add secret
+
+proc init*(_: typedesc[TOTP], secret: openArray[char], digits: int = 6, interval: int = 30): TOTP =
+  if secret.len > secretSize:
+    raise (ref OneTimePasswordDefect)(msg: sizeErrStr)
+  result = TOTP(digits: digits, interval: interval)
+  result.secret.add secret
 
 proc ensureWeCanCompile() {.used, gensym.} =
   discard TOTP.init("")
@@ -60,7 +84,7 @@ proc timecode(self: TOTP, timestamp: int): int {.inline.} =
   result = int(timestamp / self.interval)
 
 proc generate(self: OneTimePassword, input: int): int {.inline.} =
-  var hmac_hash = hmac_sha1(base32.decode(self.secret), int_to_bytestring(input))
+  var hmac_hash = hmac_sha1(base32.decode(self.secret.toOpenArray()), int_to_bytestring(input))
 
   let offset = hmac_hash[19].int and 0xf
   let code = (hmac_hash[offset].int and 0x7f) shl 24 or
@@ -100,7 +124,7 @@ proc provisioningUri*(self: OneTimePassword, name: string, initialCount: int = 0
     if issuerName != "":
       base &= issuerName & ":"
 
-    result = base & name & "?secret=" & self.secret
+    result = base & name & "?secret=" & $self.secret
 
     if self of HOTP:
       result &= "&counter=" & $initialCount
