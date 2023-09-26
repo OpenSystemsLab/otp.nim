@@ -14,7 +14,7 @@ from math import pow
 from times import epochTime
 import stack_strings as stackstrings
 
-const secretSize {.intDefine: "otp.secretSize".} = 32
+const secretSize* {.intDefine: "otp.secretSize".} = 32
 
 type
   OneTimePasswordDefect = object of Defect
@@ -34,8 +34,8 @@ when NimMajor >= 2:
   proc `=dup`(_: HOTP): HOTP {.error: hookStr.}
   proc `=dup`(_: TOTP): TOTP {.error: hookStr.}
   
-proc `=copy`(_: var HOTP, _: HOTP){.error: hookStr}
-proc `=copy`(_: var TOTP, _: TOTP){.error: hookStr}
+proc `=copy`(a: var HOTP, b: HOTP){.error: hookStr}
+proc `=copy`(a: var TOTP, b: TOTP){.error: hookStr}
 
 proc init*(_: typedesc[HOTP], secret: static openArray[char], digits: int = 6): HOTP =
   when secret.len > secretSize:
