@@ -14,25 +14,32 @@ from math import pow
 from times import epochTime
 
 type
-  OneTimePassword = ref object of RootObj
+  OneTimePassword = object of RootObj
     digits: int
-    secret: string
+    secret: string # Perhaps we should use stack_strings to have 0 heap allocation?
 
-  HOTP = ref object of OneTimePassword
-  TOTP = ref object of OneTimePassword
+  HOTP* = object of OneTimePassword
+  TOTP* = object of OneTimePassword
     interval: int
 
+const hookStr = "For security reasons a copy should not be made, this keeps the secret in memory longer." 
 
-proc newHotp*(secret: string, digits: int = 6): HOTP =
-  new(result)
-  result.secret = secret
-  result.digits = digits
+when NimMajor >= 2:
+  proc `=dup`(_: HOTP): HOTP {.error: hookStr.}
+  proc `=dup`(_: TOTP): TOTP {.error: hookStr.}
+  
+proc `=copy`(_: var HOTP, _: HOTP){.error: hookStr}
+proc `=copy`(_: var TOTP, _: TOTP){.error: hookStr}
 
-proc newTotp*(secret: string, digits: int = 6, interval: int = 30): TOTP =
-  new(result)
-  result.secret = secret
-  result.digits = digits
-  result.interval = interval
+proc init*(_: typedesc[HOTP], secret: openArray[char], digits: int = 6): HOTP =
+  HOTP(secret: substr secret, digits: digits)
+
+proc init*(_: typedesc[TOTP], secret: string, digits: int = 6, interval: int = 30): TOTP =
+  TOTP(secret: substr secret, digits: digits, interval: interval)
+
+proc ensureWeCanCompile() {.used, gensym.} =
+  discard TOTP.init("")
+  discard HOTP.init("")
 
 proc int_to_bytestring(input: int, padding: int = 8): string {.inline.} =
   var input = input
