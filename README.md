@@ -34,3 +34,7 @@ assert totp.at(2000000000) == 279037
 totp = Totp.init("blahblah")
 echo totp.now()
 ```
+
+This library uses the wonderful [stack_strings](https://github.com/termermc/nim-stack-strings) library for secrets.
+Meaning secrets are fixed length one can use `--otp.secretSize:50` to override the size.
+By default the secret length is 32 bytes.
