@@ -1,0 +1,52 @@
+name: build
+
+on:
+  push:
+    paths-ignore:
+      - 'LICENSE'
+      - '*.md'
+    branches:
+      - master
+  pull_request:
+    paths-ignore:
+      - 'LICENSE'
+      - '*.md'
+
+jobs:
+  test-actions-on-cross-platform:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macOS-latest
+        version:
+          - 1.6.14
+          - stable
+          - devel
+        exclude:
+          - os: macOS-latest
+            version: 1.4.0
+          - os: macOS-latest
+            version: devel
+          - os: windows-latest
+            version: 1.4.0
+          - os: windows-latest
+            version: devel
+    name: ${{ matrix.os }} - ${{ matrix.version }}
+    runs-on: ${{ matrix.os }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: jiro4989/setup-nim-action@v1
+        with:
+          nim-version: ${{ matrix.version }}
+      - name: Print Nim version
+        run: nim -v
+      - name: Print Nimble version
+        run: nimble -v
+      - name: Install dependences
+        run: nimble develop -Y
+      - name: Run tests
+        run: nimble test -Y

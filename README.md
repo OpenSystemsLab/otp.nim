@@ -1,4 +1,4 @@
-# otp.nim
+# otp.nim [![build](https://github.com/OpenSystemsLab/otp.nim/actions/workflows/action.yaml/badge.svg)](https://github.com/OpenSystemsLab/otp.nim/actions/workflows/action.yaml)
 
 This module implements One Time Password library for Nim.
 
