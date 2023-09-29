@@ -14,7 +14,7 @@ from math import pow
 from times import epochTime
 import stack_strings as stackstrings
 
-const secretSize* {.intDefine: "otp.secretSize".} = 32
+const secretSize* {.intDefine: "otp.secretSize".} = 128
 
 type
   OneTimePasswordDefect = object of Defect
