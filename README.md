@@ -37,7 +37,7 @@ echo totp.now()
 
 This library uses the wonderful [stack_strings](https://github.com/termermc/nim-stack-strings) library for secrets.
 Meaning secrets are fixed length one can use `--otp.secretSize:50` to override the size.
-By default the secret length is 32 bytes.
+By default the secret length is 128 bytes.
 Due to this the best way to handle secrets is as follows:
 ```nim
 let mySecret = "S3cret"
